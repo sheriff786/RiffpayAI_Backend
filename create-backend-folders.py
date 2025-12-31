@@ -2,6 +2,7 @@ import os
 
 BASE_DIR = "backend"
 
+
 STRUCTURE = {
     "app": {
         "main.py": "",
