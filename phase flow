@@ -228,3 +228,244 @@ workflow.py skeleton
 “Phase 1 start karo”
 
 और हम आगे बढ़ेंगे 💪
+
+
+Tomorrow you can add:
+
+🧑‍⚕️ DoctorLittle (Clinical reasoning)
+
+🚑 TriageAgent (Emergency routing)
+
+📄 InsuranceAgent (Claims)
+
+🔍 AuditAgent (Compliance)
+
+All talking via:
+
+MCP (how they talk)
+
+Coral (who they are)
+
+
+
+CORAL INTEGRATION (Agent Registry)
+
+Now we move to CORAL (Phase-3).
+
+I’ll explain what CORAL is, why it exists, how it fits your system, and then give practical next steps + code.
+
+🧠 What is CORAL (in simple words)
+
+CORAL = Orchestration + Governance layer for agents
+
+If:
+
+LLM = brain
+
+LangGraph = workflow engine
+
+MCP = standardized tool gateway
+
+Then:
+
+CORAL = the “Agent Manager” that decides
+
+which agent runs
+
+when it runs
+
+with what permissions
+
+under which policy
+
+and how results are combined
+
+Think Air Traffic Control for Agents ✈️
+
+❌ Problem Without CORAL (What you had before)
+
+Right now:
+
+API → DoctorLittleAgent → MCP → Tool → LLM
+
+
+Problems:
+
+❌ No policy enforcement (who can call what)
+
+❌ No agent versioning / lifecycle
+
+❌ No routing between multiple agents
+
+❌ No enterprise governance
+
+❌ Hard to scale beyond 1 agent
+
+✅ What CORAL Adds (Big Picture)
+
+With CORAL:
+
+API
+ ↓
+CORAL Router
+ ↓
+┌───────────────┐
+│ DoctorLittle  │── MCP ── Tools
+│ RadiologyBot  │── MCP ── Tools
+│ BillingAgent  │── MCP ── Tools
+└───────────────┘
+
+
+CORAL decides:
+
+Which agent to invoke
+
+Which MCP server to connect
+
+Which tools are allowed
+
+How results are merged
+
+What is logged / audited
+
+🧩 CORAL in YOUR Project
+
+You already have:
+
+app/
+ ├─ agents/
+ ├─ mcp/
+ ├─ coral/
+ │   ├─ coral_agent.toml  ✅ (exists)
+ │   ├─ integration.py    ✅ (exists)
+
+
+This is exactly correct.
+
+🧠 CORAL Concepts (Mapped to Your Code)
+CORAL Concept	Your Project
+Agent	DoctorLittle
+Capability	extract_medical_entities
+Tool	MCP tool
+Policy	who can call what
+Route	which agent handles request
+Context	patient / consultation
+📄 Step 3.1 — coral_agent.toml (EXPLAINED)
+
+Example (clean & correct):
+
+[agent]
+id = "doctor-little"
+name = "Doctor Little"
+version = "1.0.0"
+type = "medical"
+
+[mcp]
+server = "doctor-little-mcp"
+transport = "stdio"
+
+[capabilities]
+extract_entities = true
+risk_assessment = true
+clinical_documentation = true
+
+[policies]
+requires_auth = true
+phi_data = true
+max_tokens = 2048
+
+What this does:
+
+Registers DoctorLittle as a governed agent
+
+Connects it to MCP server
+
+Declares what it is allowed to do
+
+Enables future compliance (HIPAA / audit)
+
+🔗 Step 3.2 — coral/integration.py (KEY IDEA)
+
+This file is the bridge:
+
+FastAPI → CORAL → MCP → Agent → Tool
+
+Minimal, correct integration:
+# app/coral/integration.py
+
+from app.agents.doctor_little.agent import DoctorLittleAgent
+
+class CoralRouter:
+    def __init__(self):
+        self.agents = {
+            "doctor-little": DoctorLittleAgent()
+        }
+
+    async def route(self, request: dict):
+        """
+        Decide which agent to call
+        """
+        intent = request.get("intent", "medical")
+
+        if intent == "medical":
+            return await self.agents["doctor-little"].process_consultation(
+                patient_id=request["patient_id"],
+                text_input=request["text"]
+            )
+
+        raise ValueError("No agent found for request")
+
+🧪 Step 3.3 — How CORAL Helps Immediately
+Before CORAL
+await DoctorLittleAgent().process_consultation(...)
+
+After CORAL
+await coral_router.route({
+  "intent": "medical",
+  "patient_id": "P123",
+  "text": "Chest pain radiating to arm"
+})
+
+
+Now you can:
+
+Plug multiple agents
+
+Add routing rules
+
+Add auth / policy
+
+Add audit logs
+
+🔥 Real-World Example (VERY IMPORTANT)
+Without CORAL (BAD)
+
+A chatbot can:
+
+Call medical tools
+
+Call billing tools
+
+Leak PHI
+
+No control
+
+With CORAL (GOOD)
+Request	Routed To
+Chest pain	DoctorLittle
+X-ray image	RadiologyAgent
+Insurance claim	BillingAgent
+Unauthorized user	❌ blocked
+
+This is enterprise-grade AI architecture.
+
+✅ Where You Are Right Now
+
+✔ MCP server running
+✔ Tools registered
+✔ Inspector working
+✔ Tool returns structured JSON
+✔ CORAL folder exists
+✔ Perfect project layout
+
+You are exactly at the right point.

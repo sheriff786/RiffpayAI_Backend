@@ -5,7 +5,7 @@ import re
 from typing import Dict, List
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
-
+import os
 from .state import MedicalConsultationState
 from .state import MedicalConsultationState, UrgencyLevel
 from .workflow import build_workflow
@@ -26,7 +26,9 @@ class DoctorLittleAgent:
     def __init__(self):
         self.tools = DoctorLittleTools(self)
         self.workflow = build_workflow(self)
-        self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        self.llm = None
+        self._llm_model = "gpt-4o-mini"
+        self._llm_temperature = 0
         self.templates = {
             "SOAP": {
                 "name": "SOAP Note",
@@ -35,6 +37,22 @@ class DoctorLittleAgent:
         }
         self.agent_id = "doctor-little-medical-agent"
         self.agent_version = "2.0.0"
+        
+    def _get_llm(self):
+        if self.llm is None:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise RuntimeError(
+                    "OPENAI_API_KEY is required when invoking LLM tools"
+                )
+
+            self.llm = ChatOpenAI(
+                model=self._llm_model,
+                temperature=self._llm_temperature,
+                api_key=api_key
+            )
+        return self.llm
+
 
     async def _voice_processing_node(self, state: MedicalConsultationState):
         if state.get("audio_data"):
@@ -325,7 +343,9 @@ class DoctorLittleAgent:
 
         prompt = prompts.ENTITY_EXTRACTION_PROMPT.format(text=text)
 
-        response = await self.llm.ainvoke(prompt)
+        llm = self._get_llm()
+        response = await llm.ainvoke(prompt)
+
 
         # raw = response.content.strip()
 

@@ -1,0 +1,19 @@
+[agent]
+id = "doctor-little"
+name = "Doctor Little"
+version = "1.0.0"
+type = "medical"
+
+[mcp]
+server = "doctor-little-mcp"
+transport = "stdio"
+
+[capabilities]
+extract_entities = true
+risk_assessment = true
+clinical_documentation = true
+
+[policies]
+requires_auth = true
+phi_data = true
+max_tokens = 2048
