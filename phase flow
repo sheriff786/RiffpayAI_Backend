@@ -469,3 +469,44 @@ This is enterprise-grade AI architecture.
 ✔ Perfect project layout
 
 You are exactly at the right point.
+
+
+
+
+#Now implemetation for phase 4 integrating with other things.
+
+What Comes NEXT (Recommended Order)
+🔹 Phase 3 — CORAL → Multi-Agent Expansion
+
+You can now:
+
+Add TriageAgent
+
+Add BillingAgent
+
+Add FollowUpAgent
+
+All registered via CORAL.
+
+DoctorLittle becomes one specialist.
+
+
+🔹 Phase 5 — Persistence & Audit
+
+Store consultation state
+
+Store SOAP notes
+
+Store risk decisions
+
+Compliance-ready (HIPAA style)
+
+🔹 Phase 6 — UI / Product
+
+Doctor dashboard
+
+Patient app
+
+Chat + documents
+
+Timeline view

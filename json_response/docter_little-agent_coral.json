@@ -1,0 +1,92 @@
+{
+  "status": "success",
+  "decision": "general",
+  "entities": {
+    "chief_complaint": "Severe chest pain",
+    "timeline": {
+      "onset": "since morning",
+      "duration": "not specified",
+      "progression": "not specified",
+      "confidence": 0.8
+    },
+    "symptoms": [
+      "chest pain",
+      "radiating to left arm"
+    ],
+    "red_flags": [
+      "not specified",
+      "chest pain"
+    ],
+    "pain_assessment": {
+      "severity": 8,
+      "scale": "out of 10"
+    },
+    "medications": "not specified",
+    "allergies": "not specified",
+    "medical_history": "not specified",
+    "vital_signs": "not specified",
+    "physical_findings": "not specified",
+    "risk_factors": "not specified",
+    "social_history": "not specified",
+    "family_history": "not specified",
+    "extraction_confidence": 0.9,
+    "processing_time": 1767387862.424167,
+    "text_length": 65,
+    "entities_found": 5
+  },
+  "risk": {
+    "risk_score": 3.4,
+    "urgency_level": "low",
+    "risk_factors": {
+      "red_flags": 4,
+      "pain_severity": 8,
+      "vital_signs": 0,
+      "symptom_complexity": 2,
+      "chronic_conditions": 0
+    },
+    "recommendations": [
+      "Routine follow-up as appropriate",
+      "Monitor symptoms",
+      "Lifestyle modifications as indicated"
+    ],
+    "assessment_time": 1767387862.424167,
+    "confidence": 0.85
+  },
+  "soap_note": {
+    "template_type": "SOAP",
+    "template_name": "SOAP Note",
+    "sections": {
+      "subjective": "Chief complaint: Severe chest pain. Associated symptoms: chest pain, radiating to left arm. Pain severity: 8/10.",
+      "objective": "Physical examination to be performed.",
+      "assessment": "Patient presenting with Severe chest pain. Clinical risk assessment: low urgency (score: 3.4/10).",
+      "plan": "Plan: Routine follow-up as appropriate; Monitor symptoms; Lifestyle modifications as indicated."
+    },
+    "formatted_text": "SOAP Note\nGenerated: 2026-01-03 02:34:22\n============================================================\n\nSUBJECTIVE:\nChief complaint: Severe chest pain. Associated symptoms: chest pain, radiating to left arm. Pain severity: 8/10.\n\nOBJECTIVE:\nPhysical examination to be performed.\n\nASSESSMENT:\nPatient presenting with Severe chest pain. Clinical risk assessment: low urgency (score: 3.4/10).\n\nPLAN:\nPlan: Routine follow-up as appropriate; Monitor symptoms; Lifestyle modifications as indicated.\n",
+    "quality_metrics": {
+      "completeness": 100,
+      "clinical_accuracy": 66.7,
+      "overall_score": 86.7,
+      "completed_sections": 4,
+      "total_sections": 4
+    },
+    "icd10_suggestions": [
+      {
+        "code": "R07.89",
+        "description": "Other chest pain",
+        "category": "cardiovascular",
+        "confidence": 1,
+        "rationale": "Matches clinical presentation"
+      },
+      {
+        "code": "R10.9",
+        "description": "Unspecified abdominal pain",
+        "category": "gastrointestinal",
+        "confidence": 1,
+        "rationale": "Matches clinical presentation"
+      }
+    ],
+    "word_count": 55,
+    "generated_at": "2026-01-03T02:34:22.425167",
+    "agent_version": "2.0.0"
+  }
+}
