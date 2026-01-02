@@ -22,12 +22,18 @@ def root():
     return {"status": "Doctor Little API is running"}
 
 # Register API routes
-app.include_router(
-    consult_router,
-    prefix="/api",
-    tags=["Consultation"]
-)
+# app.include_router(
+#     consult_router,
+#     prefix="/api",
+#     tags=["Consultation"]
+# )
 
+
+from app.api.consult import router as consult_router
+
+app = FastAPI(title="Doctor Little API")
+
+app.include_router(consult_router, prefix="/api", tags=["Consultation"])
 
 
 
