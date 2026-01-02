@@ -143,6 +143,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.riff
 
 # Spyder project settings
 .spyderproject
@@ -201,6 +202,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+.github
 # Marimo
 marimo/_static/
 marimo/_lsp/
