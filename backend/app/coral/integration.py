@@ -59,6 +59,7 @@ class CoralOrchestrator:
             risk_assessment=risk,
             template_type="SOAP"
         )
+        
 
         return {
             "mode": mode,
@@ -66,4 +67,6 @@ class CoralOrchestrator:
             "risk": risk,
             "note": note
         }
+        
+        
 
