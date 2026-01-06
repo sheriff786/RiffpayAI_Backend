@@ -5,7 +5,15 @@ from langsmith import traceable
 from .prompts import TRIAGE_PROMPT
 from app.agents.registry import AgentRegistry
 import os
+from observability.logging.logger import get_logger
+from observability.logging.llm_ada import RequestLogger
 
+_logger = RequestLogger(
+    get_logger("Triage agent", "agent.log"),
+    {}
+)
+
+_logger.info("Triage agent loaded")
 
 class TriageAgent:
     """
@@ -42,7 +50,13 @@ class TriageAgent:
                 urgency_level=risk.get("urgency_level")
             )
             llm = self._get_llm()
-            response = await self.llm.ainvoke(prompt)
+            llm_logger = RequestLogger(
+            get_logger("llm", "llm.log"),
+                {}
+            )
+            llm_logger.info("LLM CALL: follow up generation")
+            response = await llm.ainvoke(prompt)
+            llm_logger.info("LLM RETURN")
             raw = response.content.strip()
 
             return json.loads(raw)

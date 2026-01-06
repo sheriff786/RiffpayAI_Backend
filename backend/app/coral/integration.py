@@ -9,13 +9,6 @@ from app.agents.follow_up.agent import FollowUpAgent
 class CoralOrchestrator:
     def __init__(self):
         registry = AgentRegistry()
-
-        # REGISTER AGENTS (order matters)
-        registry.register(DoctorLittleAgent())
-        registry.register(TriageAgent())
-        registry.register(BillingAgent())
-        registry.register(FollowUpAgent())
-
         self.router = AgentRouter(registry)
 
     async def handle_consultation(self, patient_id: str, text: str):

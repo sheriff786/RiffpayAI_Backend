@@ -24,6 +24,17 @@ from langgraph.graph import StateGraph, START, END
 from .state import MedicalConsultationState
 from app.agents.base import BaseAgent
 
+from observability.logging.logger import get_logger
+from observability.logging.llm_ada import RequestLogger
+
+_logger = RequestLogger(
+    get_logger("doctor_little", "agent.log"),
+    {}
+)
+
+_logger.info("Entering entity extraction")
+
+
 class DoctorLittleAgent(BaseAgent):
     name = "doctor-little"
     priority = 10          # runs first
@@ -45,6 +56,8 @@ class DoctorLittleAgent(BaseAgent):
         }
         self.agent_id = "doctor-little-medical-agent"
         self.agent_version = "2.0.0"
+        self._llm_used = False
+        self._llm_cache = None
         
     def _get_llm(self):
         if self.llm is None:
@@ -60,6 +73,15 @@ class DoctorLittleAgent(BaseAgent):
                 api_key=api_key
             )
         return self.llm
+    # def _get_llm(self):
+    #     if self._llm is None:
+    #         self._llm = ChatOpenAI(
+    #             model="gpt-4o-mini",
+    #             temperature=0,
+    #             api_key=os.getenv("OPENAI_API_KEY"),
+    #         )
+    #     return self._llm
+
 
 
     async def _voice_processing_node(self, state: MedicalConsultationState):
@@ -89,13 +111,47 @@ class DoctorLittleAgent(BaseAgent):
         return state
 
 
+    # async def _entity_extraction_node(self, state):
+    #     if state.get("medical_entities"):
+    #         return state 
+    #     if state.get("transcript"):
+    #         result = await self.extract_medical_entities_internal(state["transcript"])
+    #         state["medical_entities"] = result
+    #         state["confidence_scores"]["entities"] = result.get(
+    #             "extraction_confidence", 0.0
+    #         )
+
+    #     return state
+    
+    #providing fix 
     async def _entity_extraction_node(self, state):
-        if state.get("transcript"):
-            result = await self.extract_medical_entities_internal(state["transcript"])
-            state["medical_entities"] = result
-            state["confidence_scores"]["entities"] = result.get(
-                "extraction_confidence", 0.0
-            )
+        # 🚫 HARD STOP: already ran once
+        if state.get("_llm_result"):
+            state["medical_entities"] = state["_llm_result"]
+            return state
+
+        if not state.get("transcript"):
+            return state
+
+        llm = self._get_llm()
+        prompt = prompts.ENTITY_EXTRACTION_PROMPT.format(
+            text=state["transcript"]
+        )
+        #logger info
+        llm_logger = RequestLogger(
+            get_logger("llm", "llm.log"),
+            {}
+        )
+        llm_logger.info("LLM CALL: ENTITY_EXTRACTION")
+        response = await llm.ainvoke(prompt)
+        llm_logger.info("LLM RETURN")
+        raw_entities = self._extract_json_from_llm(response.content)
+        entities = self._canonicalize_entities(raw_entities)
+
+        # 🔐 CACHE RESULT (THIS IS THE KEY)
+        state["_llm_result"] = entities
+        state["medical_entities"] = entities
+        state["confidence_scores"]["entities"] = 0.9
 
         return state
 

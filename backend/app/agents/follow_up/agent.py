@@ -6,6 +6,14 @@ from typer import prompt
 from .prompts import FOLLOW_UP_PROMPT
 from app.agents.registry import AgentRegistry
 import os
+from observability.logging.logger import get_logger
+from observability.logging.llm_ada import RequestLogger
+_logger = RequestLogger(
+    get_logger("follow up", "agent.log"),
+    {}
+)
+count =0
+_logger.info("follow up agent loaded")
 class FollowUpAgent:
     """
     Patient-facing follow-up communication agent.
@@ -46,8 +54,16 @@ class FollowUpAgent:
             )
 
             llm = self._get_llm()
+            llm_logger = RequestLogger(
+            get_logger("llm", "llm.log"),
+                {}
+            )
+            print("count:",count)
+            llm_logger.info("LLM CALL: follow up generation")
             response = await llm.ainvoke(prompt)
+            llm_logger.info("LLM RETURN")
             raw = response.content.strip()
+            count+=1
 
             return json.loads(raw)
 

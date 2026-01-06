@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 import os
-
-
+from observability.logging.middleware import RequestLoggingMiddleware
 load_dotenv()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_KEY:
@@ -19,7 +18,7 @@ app = FastAPI(
     description="AI Medical Consultation Backend (LangGraph + MCP + Coral-ready)",
     version="1.0.0",
 )
-
+app.add_middleware(RequestLoggingMiddleware)
 # Health check (IMPORTANT)
 @app.get("/")
 def root():

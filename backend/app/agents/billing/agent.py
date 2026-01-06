@@ -5,6 +5,16 @@ from langsmith import traceable
 from .prompts import BILLING_PROMPT
 import os
 from app.agents.registry import AgentRegistry
+from observability.logging.logger import get_logger
+from observability.logging.llm_ada import RequestLogger
+
+_logger = RequestLogger(
+    get_logger("Billing agent", "agent.log"),
+    {}
+)
+
+_logger.info("Billing agent loaded")
+
 class BillingAgent:
     """
     LLM-guided medical billing agent with deterministic fallback.
@@ -46,7 +56,13 @@ class BillingAgent:
                 icd_codes=icd_codes
             )
             llm = self._get_llm()
-            response = await self.llm.ainvoke(prompt)
+            llm_logger = RequestLogger(
+            get_logger("llm", "llm.log"),
+                {}
+            )
+            llm_logger.info("LLM CALL: billing generation")
+            response = await llm.ainvoke(prompt)
+            llm_logger.info("LLM RETURN")
             raw = response.content.strip()
 
             return json.loads(raw)
